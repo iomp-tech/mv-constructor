@@ -1,0 +1,25 @@
+// header
+.header
+	+animateOpenPage
+	&-wrapper
+		display: flex
+		justify-content: space-between
+		align-items: center
+
+		padding: 50px 0 25px 0
+		border-bottom: 1px solid $gray
+
+	&__logo
+		width: 200px
+
+	&-menu
+		&__link
+			font-size: 18px
+			margin: 0 20px
+			color: $black
+
+			&_active
+				color: $mainColor
+
+	&__link
+		font-size: 18px
