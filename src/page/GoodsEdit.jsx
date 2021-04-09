@@ -102,7 +102,7 @@ const GoodsEdit = ({match}) => {
                 },
             })
             .then(({data}) => {
-                //window.location.reload();
+                window.location.reload();
             })
             .catch(() => {
                 return false;
