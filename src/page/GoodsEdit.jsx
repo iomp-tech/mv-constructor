@@ -32,6 +32,9 @@ const GoodsEdit = ({match}) => {
     const onSubmit = (dataForm) => {
         let formData = new FormData();
 
+        const newObj = itemById;
+        delete newObj.page;
+
         for (let key in dataForm) {
             if (key === "page") {
                 for (let key2 in dataForm[key]) {
@@ -78,34 +81,12 @@ const GoodsEdit = ({match}) => {
                 }
 
                 formData.append("page", JSON.stringify(dataForm[key]));
-            } else if (key === "id_awo_courses") {
-                formData.append(
-                    "id_awo_courses",
-                    JSON.stringify(dataForm[key])
-                );
-            } else if (
-                key === "date" ||
-                key === "dateDelete" ||
-                key === "minDate" ||
-                key === "maxDate"
-            ) {
-                formData.append(
-                    key,
-                    format(dataForm[key], "yyyy-MM-dd, HH:mm")
-                );
-            } else if (key === "content") {
-                formData.append("content", JSON.stringify(dataForm[key]));
+            }
+        }
 
-                for (let key2 in dataForm[key]) {
-                    if (dataForm[key][key2].file) {
-                        formData.append(
-                            "file-" + key2,
-                            dataForm[key][key2].file.rawFile
-                        );
-                    }
-                }
-            } else {
-                formData.append(key, dataForm[key]);
+        for (let key in newObj) {
+            if (newObj[key] !== "") {
+                formData.append(key, newObj[key]);
             }
         }
 
@@ -121,7 +102,7 @@ const GoodsEdit = ({match}) => {
                 },
             })
             .then(({data}) => {
-                window.location.reload();
+                //window.location.reload();
             })
             .catch(() => {
                 return false;
