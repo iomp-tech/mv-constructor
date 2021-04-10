@@ -432,14 +432,24 @@ const GoodsPageBlockFeedbackPhotos = ({fields, valueForm}) => {
         fields.remove(index);
     };
 
-    const [stateImg, setStateImg] = React.useState("");
+    const [stateImg, setStateImg] = React.useState([]);
 
-    const urlGet = (input) => {
+    React.useEffect(() => {
+        fields.map(() => {
+            stateImg.push("");
+        });
+
+        setStateImg([...stateImg]);
+    }, []);
+
+    const urlGet = (input, index) => {
         if (input.name && !input.imageFeedback) {
             let reader = new FileReader();
 
             reader.onload = function (e) {
-                setStateImg(e.target.result);
+                stateImg[index] = e.target.result;
+
+                setStateImg([...stateImg]);
             };
 
             reader.readAsDataURL(input);
@@ -467,13 +477,13 @@ const GoodsPageBlockFeedbackPhotos = ({fields, valueForm}) => {
 
                     <Field component={FieldFileInput} name={`${key}`} />
 
-                    {urlGet(valueForm.photos[index])}
+                    {urlGet(valueForm.photos[index], index)}
 
-                    {stateImg !== "" ? (
+                    {stateImg[index] !== "" ? (
                         <div
                             className="img-placeholder"
                             style={{
-                                backgroundImage: `url(${stateImg})`,
+                                backgroundImage: `url(${stateImg[index]})`,
                             }}
                         ></div>
                     ) : (
@@ -506,14 +516,24 @@ const GoodsPageBlockFeedbackVideos = ({fields, valueForm}) => {
         fields.remove(index);
     };
 
-    const [stateImg, setStateImg] = React.useState("");
+    const [stateImg, setStateImg] = React.useState([]);
 
-	const urlGet = (input) => {
+    React.useEffect(() => {
+        fields.map(() => {
+            stateImg.push("");
+        });
+
+        setStateImg([...stateImg]);
+    }, []);
+
+    const urlGet = (input, index) => {
         if (typeof input.videoCodePhoto === "object") {
             let reader = new FileReader();
 
             reader.onload = function (e) {
-                setStateImg(e.target.result);
+                stateImg[index] = e.target.result;
+
+                setStateImg([...stateImg]);
             };
 
             reader.readAsDataURL(input.videoCodePhoto);
@@ -543,7 +563,7 @@ const GoodsPageBlockFeedbackVideos = ({fields, valueForm}) => {
                         component={RenderInput}
                         type="text"
                         name={`${key}.videoCode`}
-                        label='Вставьте значение из поля src=""'
+                        label='Вставьте id видео на YouTube'
                         className="goods-page-block__input"
                     />
 
@@ -552,13 +572,13 @@ const GoodsPageBlockFeedbackVideos = ({fields, valueForm}) => {
                         name={`${key}.videoCodePhoto`}
                     />
 
-                    {urlGet(valueForm.videos[index])}
+                    {urlGet(valueForm.videos[index], index)}
 
-                    {stateImg !== "" ? (
+                    {stateImg[index] !== "" ? (
                         <div
                             className="img-placeholder"
                             style={{
-                                backgroundImage: `url(${stateImg})`,
+                                backgroundImage: `url(${stateImg[index]})`,
                             }}
                         ></div>
                     ) : (
