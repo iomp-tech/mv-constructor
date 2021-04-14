@@ -245,7 +245,7 @@ const TimetablePageBlockModules = ({fields, valueForm}) => {
 
     React.useEffect(() => {
         if (!items.length) {
-            dispatch(fetchTimetable());
+            dispatch(fetchGoods());
         }
     }, []);
 
