@@ -1,4 +1,4 @@
-### Админ панель (конструктор лендинг страниц) для онлайн-института психологии - Institute of Modern Psychology
+### Админ панель (конструктор лендинг страниц) для онлайн-института - MasterVision
 
 ## Стек технологий
 
@@ -12,12 +12,12 @@
 ## Установка
 Клонируйте репозиторий.
 ```
-git clone https://github.com/iomp-tech/iomp-constructor.git
+git clone https://github.com/iomp-tech/mv-constructor.git
 ```
 
 Переход в рабочий каталог.
 ```
-cd iomp-constructor
+cd mv-constructor
 ```
 
 Установка зависимостей, запуск сборки.
