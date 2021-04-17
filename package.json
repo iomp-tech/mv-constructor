@@ -1,5 +1,5 @@
 {
-  "name": "iomp-constructor",
+  "name": "mv-constructor",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

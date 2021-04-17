@@ -9,10 +9,10 @@ const Header = () => {
         <div className="header">
             <div className="container">
                 <div className="header-wrapper">
-                    <a href="https://iomp.ru" className="header-logo">
+                    <a href="https://mastervision.su" className="header-logo">
                         <img
                             src={`${DOMEN}/public/storage/all/logo.svg`}
-                            alt="IOMP"
+                            alt="MasterVision"
                             className="header__logo"
                         />
                     </a>
