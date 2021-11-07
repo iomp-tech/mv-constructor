@@ -33,3 +33,8 @@ const setTimetableById = (item) => ({
 	type: 'SET_TIMETABLE_BY_ID',
 	payload: item,
 });
+
+export const setTimetablePageCopy = (item) => ({
+	type: 'SET_TIMETABLE_PAGE_COPY',
+	payload: item,
+});

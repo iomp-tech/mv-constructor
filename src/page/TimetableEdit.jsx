@@ -1,9 +1,8 @@
 import React from "react";
 import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
-import {format} from "date-fns";
 
-import {fetchTimetableById} from "../redux/actions/timetable";
+import {fetchTimetableById, fetchTimetable} from "../redux/actions/timetable";
 import {fetchUser} from "../redux/actions/user";
 
 import {API_DOMEN} from "../api";
@@ -18,7 +17,9 @@ import {
 const TimetableEdit = ({match}) => {
     const dispatch = useDispatch();
 
-    const {isLoadedById, itemById} = useSelector(({timetable}) => timetable);
+    const {isLoadedById, itemById, items} = useSelector(
+        ({timetable}) => timetable
+    );
     const {isLoaded, isLogin} = useSelector(({user}) => user);
 
     React.useEffect(() => {
@@ -26,6 +27,10 @@ const TimetableEdit = ({match}) => {
 
         if (!isLogin) {
             dispatch(fetchUser());
+        }
+
+        if (!items.length) {
+            dispatch(fetchTimetable());
         }
     }, []);
 
@@ -38,6 +43,15 @@ const TimetableEdit = ({match}) => {
         for (let key in dataForm) {
             if (key === "page") {
                 for (let key2 in dataForm[key]) {
+                    if (dataForm[key][key2].type === "main1-image") {
+                        if (dataForm[key][key2].image) {
+                            formData.append(
+                                "main1Image-" + key2,
+                                dataForm[key][key2].image
+                            );
+                        }
+                    }
+
                     if (dataForm[key][key2].type === "feedback-photos") {
                         if (dataForm[key][key2].photos) {
                             for (let key3 in dataForm[key][key2].photos) {

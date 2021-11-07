@@ -51,6 +51,10 @@
 		top: 0
 		left: 0
 		width: 100%
+
+		min-height: 100vh
+
+		background-color: #F6F6F6
 		+animateOpenLeftPage
 
 		&-top
@@ -74,6 +78,19 @@
 					font-size: 18px
 					color: $gray
 					padding-left: 15px
+
+			&-filters
+				padding: 35px
+
+				border-radius: 15px
+				background-color: $white
+
+				&-copy-page
+					&__subtitle
+						display: block
+						font-size: 18px
+						color: $gray
+						margin-bottom: 15px
 
 		&-add
 			&-block
@@ -103,27 +120,39 @@
 			position: relative
 			display: flex
 			flex-direction: column
-			margin: 50px 0
+			padding: 50px
 
-			padding-bottom: 15px
-			border-bottom: 1px solid $gray
+			border-radius: 15px
+			background-color: $white
+
 			+animateOpenLeftPage
 
 			&__input
 				margin-bottom: 25px
 
-			&-delete
-				display: flex
-				justify-content: space-between
-				align-items: center
-
 			&__delete
+				position: absolute
+				top: 30px
+				right: 30px
+
 				user-select: none
-				font-size: 18px
+				font-size: 16px
 				cursor: pointer
 				+transition
 				&:hover
 					color: $red
+
+			&__slider
+				position: absolute
+				top: 30px
+				left: -120px
+
+				user-select: none
+				font-size: 16px
+				cursor: pointer
+				+transition
+				&:hover
+					color: $gray
 
 		&-subblock
 			width: 70%
@@ -144,6 +173,7 @@
 
 		&-bottom
 			&-btn
+				margin-top: 50px
 				display: flex
 				justify-content: space-between
 				align-items: center

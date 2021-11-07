@@ -33,3 +33,8 @@ const setGoodsById = (item) => ({
 	type: 'SET_GOODS_BY_ID',
 	payload: item,
 });
+
+export const setGoodsPageCopy = (item) => ({
+	type: 'SET_GOODS_PAGE_COPY',
+	payload: item,
+});

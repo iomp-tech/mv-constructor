@@ -1,9 +1,8 @@
 import React from "react";
 import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
-import {format} from "date-fns";
 
-import {fetchGoodsById} from "../redux/actions/goods";
+import {fetchGoodsById, fetchGoods} from "../redux/actions/goods";
 import {fetchUser} from "../redux/actions/user";
 
 import {API_DOMEN} from "../api";
@@ -18,7 +17,7 @@ import {
 const GoodsEdit = ({match}) => {
     const dispatch = useDispatch();
 
-    const {isLoadedById, itemById} = useSelector(({goods}) => goods);
+    const {isLoadedById, itemById, items} = useSelector(({goods}) => goods);
     const {isLoaded, isLogin} = useSelector(({user}) => user);
 
     React.useEffect(() => {
@@ -26,6 +25,10 @@ const GoodsEdit = ({match}) => {
 
         if (!isLogin) {
             dispatch(fetchUser());
+        }
+
+        if (!items.length) {
+            dispatch(fetchGoods());
         }
     }, []);
 
@@ -38,6 +41,15 @@ const GoodsEdit = ({match}) => {
         for (let key in dataForm) {
             if (key === "page") {
                 for (let key2 in dataForm[key]) {
+                    if (dataForm[key][key2].type === "main1-image") {
+                        if (dataForm[key][key2].image) {
+                            formData.append(
+                                "main1Image-" + key2,
+                                dataForm[key][key2].image
+                            );
+                        }
+                    }
+
                     if (dataForm[key][key2].type === "feedback-photos") {
                         if (dataForm[key][key2].photos) {
                             for (let key3 in dataForm[key][key2].photos) {

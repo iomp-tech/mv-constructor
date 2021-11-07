@@ -1,3 +1,3 @@
-export const API_DOMEN = "http://cn40840.tmweb.ru/api/public/api";
+export const API_DOMEN = "https://api2.mastervision.su/public/api";
 
-export const DOMEN = "http://cn40840.tmweb.ru/api";
+export const DOMEN = "https://api2.mastervision.su";

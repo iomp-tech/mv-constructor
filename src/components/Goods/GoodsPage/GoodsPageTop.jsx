@@ -1,7 +1,32 @@
 import React from "react";
+import {useSelector, useDispatch} from "react-redux";
 import {Link} from "react-router-dom";
 
+import {setGoodsPageCopy} from "../../../redux/actions/goods";
+
 const GoodsPageTop = ({title, page}) => {
+    const dispatch = useDispatch();
+
+    const {items, itemById} = useSelector(({goods}) => goods);
+
+    const handlerGoodsCopyPage = (e) => {
+        if (Object.keys(JSON.parse(e.target.value)).length) {
+            dispatch(
+                setGoodsPageCopy({
+                    page: JSON.parse(e.target.value).page,
+                    id: JSON.parse(e.target.value).id,
+                })
+            );
+        } else {
+            dispatch(
+                setGoodsPageCopy({
+                    page: [],
+                    id: 0,
+                })
+            );
+        }
+    };
+
     return (
         <div className="goods-page-wrapper">
             <div className="goods-page-top">
@@ -20,6 +45,36 @@ const GoodsPageTop = ({title, page}) => {
                     {title}{" "}
                     <span>(Количество блоков: {page ? page.length : 0})</span>
                 </p>
+            </div>
+            <div className="goods-page-top-filters">
+                <div className="goods-page-top-filters-copy-page">
+                    <span className="goods-page-top-filters-copy-page__subtitle">
+                        Копирование страниц
+                    </span>
+                    <div className="select">
+                        <select
+                            name="goodSelectCopyPage"
+                            className="select__select"
+                            onChange={(e) => handlerGoodsCopyPage(e)}
+                        >
+                            <option
+                                value={JSON.stringify({})}
+                                className="select__option"
+                            ></option>
+                            {items.map((item, index) =>
+                                itemById.id !== item.id && item.page ? (
+                                    <option
+                                        value={JSON.stringify(item)}
+                                        className="select__option"
+                                        key={`select__option-${index}`}
+                                    >
+                                        {item.title}
+                                    </option>
+                                ) : null
+                            )}
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     );

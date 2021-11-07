@@ -1,6 +1,7 @@
 import React from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {Field, FieldArray} from "redux-form";
+import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 
 import {fetchGoods} from "../../../redux/actions/goods";
 import {fetchTeachers} from "../../../redux/actions/teachers";
@@ -11,6 +12,46 @@ import {
     RenderSelect,
     FieldFileInput,
 } from "../../";
+
+const GoodsPageBlockMain1Image = ({keyId, valueForm}) => {
+    const [stateImg, setStateImg] = React.useState("");
+
+    const urlGet = (input) => {
+        if (typeof input !== "string" && input) {
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                setStateImg(e.target.result);
+            };
+
+            reader.readAsDataURL(input);
+        }
+    };
+
+    return (
+        <>
+            <Field component={FieldFileInput} name={`${keyId}.image`} />
+
+            {urlGet(valueForm.image)}
+
+            {stateImg !== "" ? (
+                <div
+                    className="img-placeholder"
+                    style={{
+                        backgroundImage: `url(${stateImg})`,
+                    }}
+                ></div>
+            ) : (
+                <div
+                    className="img-placeholder"
+                    style={{
+                        backgroundImage: `url(${valueForm.image})`,
+                    }}
+                ></div>
+            )}
+        </>
+    );
+};
 
 const GoodsPageBlockSquares = ({fields}) => {
     const addBlock = () => {
@@ -563,7 +604,7 @@ const GoodsPageBlockFeedbackVideos = ({fields, valueForm}) => {
                         component={RenderInput}
                         type="text"
                         name={`${key}.videoCode`}
-                        label='Вставьте id видео на YouTube'
+                        label="Вставьте id видео на YouTube"
                         className="goods-page-block__input"
                     />
 
@@ -662,6 +703,16 @@ const GoodsPageBlockGoods = ({fields}) => {
 };
 
 const GoodsPageBlock = ({fields, values}) => {
+    const {pageCopy, pageCopyId} = useSelector(({goods}) => goods);
+
+    React.useEffect(() => {
+        fields.removeAll();
+
+        pageCopy.map((item) => {
+            fields.push(item);
+        });
+    }, [pageCopyId]);
+
     const addBlock = () => {
         fields.push({type: "main1"});
     };
@@ -670,8 +721,17 @@ const GoodsPageBlock = ({fields, values}) => {
         fields.remove(index);
     };
 
+    const makeOnDragEndFunction = (fields) => (result) => {
+        if (!result.destination) {
+            return;
+        }
+
+        fields.move(result.source.index, result.destination.index);
+    };
+
     const blocks = [
         {title: "Главная 1", key: "main1"},
+        {title: "Главная 1 (с картинкой)", key: "main1-image"},
         {title: "Главная 2", key: "main2"},
         {title: "Квадраты", key: "section-squares"},
         {title: "Слайдер с текстом", key: "slider-text"},
@@ -684,344 +744,563 @@ const GoodsPageBlock = ({fields, values}) => {
 
     return (
         <>
-            {fields.map((key, index) => (
-                <div
-                    className="goods-page-block"
-                    key={`goods-page-block-${key}-${index}`}
-                >
-                    <div className="goods-page-block-delete">
-                        <h2 className="goods-page-subblock__title">
-                            Блок страницы {parseFloat(index + 1)}
-                        </h2>
-                        <span
-                            className="goods-page-block__delete"
-                            onClick={() => deleteBlock(index)}
-                        >
-                            Удалить
-                        </span>
-                    </div>
-                    <Field
-                        component={RenderSelect}
-                        name={`${key}.type`}
-                        choices={blocks}
-                        label="Тип блока"
-                        className="goods-page-block__select"
-                        onChange={() => delete values.page[index]}
-                    />
-                    {values && values.page[index].type === "main1" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.subtitle`}
-                                label="Надзаголовок"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.description`}
-                                label="Описание"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.btnText`}
-                                label="Кнопка"
-                                className="goods-page-block__input"
-                            />
-                        </>
-                    ) : null}
-                    {values && values.page[index].type === "main2" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.subtitle`}
-                                label="Надзаголовок"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.description`}
-                                label="Описание"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="number"
-                                name={`${key}.main2_id_awo`}
-                                label="ID группы на АвтоВебОфис"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.action`}
-                                label="Введите значения атрибута 'action' в теге '<form>'"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.formId`}
-                                label="Введите значения атрибута 'value' в теге '<input>' с 'name=formId'"
-                                className="goods-page-block__input"
-                            />
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.formVc`}
-                                label="Введите значения атрибута 'value' в теге '<input>' с 'name=formVc'"
-                                className="goods-page-block__input"
-                            />
+            <DragDropContext onDragEnd={makeOnDragEndFunction(fields)}>
+                <Droppable droppableId="droppable">
+                    {(provided, snapshot) => (
+                        <div ref={provided.innerRef}>
+                            {fields.map((key, index) => (
+                                <Draggable
+                                    key={key}
+                                    draggableId={key}
+                                    index={index}
+                                >
+                                    {(provided, snapshot) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            style={{
+                                                userSelect: "none",
+                                                padding: "25px 0 0 0",
 
-                            <Field
-                                component={RenderSelect}
-                                name={`${key}.auto`}
-                                label="Авто"
-                                choices={[
-                                    {title: "Нет", key: 0},
-                                    {title: "Да", key: 1},
-                                ]}
-                                className="goods-page-block__select"
-                            />
+                                                ...provided.draggableProps
+                                                    .style,
+                                            }}
+                                        >
+                                            <div
+                                                className="goods-page-block"
+                                                key={`goods-page-block-${key}-${index}`}
+                                            >
+                                                <h2 className="goods-page-subblock__title">
+                                                    Блок страницы
+                                                </h2>
+                                                <div className="goods-page-block-delete">
+                                                    <span
+                                                        className="goods-page-block__delete"
+                                                        onClick={() =>
+                                                            deleteBlock(index)
+                                                        }
+                                                    >
+                                                        Удалить
+                                                    </span>
+                                                </div>
 
-                            {values.page[index].auto === "1" ? (
-                                <Field
-                                    component={RenderInput}
-                                    type="number"
-                                    name={`${key}.day`}
-                                    label="Через сколько дней продлить мероприятие"
-                                    className="goods-page-block__input"
-                                />
-                            ) : null}
+                                                <div
+                                                    className="goods-page-block-slider"
+                                                    {...provided.dragHandleProps}
+                                                >
+                                                    <span className="goods-page-block__slider">
+                                                        Переместить
+                                                    </span>
+                                                </div>
+                                                <Field
+                                                    component={RenderSelect}
+                                                    name={`${key}.type`}
+                                                    choices={blocks}
+                                                    label="Тип блока"
+                                                    className="goods-page-block__select"
+                                                    onChange={() =>
+                                                        delete values.page[
+                                                            index
+                                                        ]
+                                                    }
+                                                />
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "main1" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.subtitle`}
+                                                            label="Надзаголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.description`}
+                                                            label="Описание"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.btnText`}
+                                                            label="Кнопка"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "main1-image" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.subtitle`}
+                                                            label="Надзаголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.description`}
+                                                            label="Описание"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.btnText`}
+                                                            label="Кнопка"
+                                                            className="goods-page-block__input"
+                                                        />
 
-                            <Field
-                                component={RenderSelect}
-                                name={`${key}.range`}
-                                label="Диапазон"
-                                choices={[
-                                    {title: "Нет", key: 0},
-                                    {title: "Да", key: 1},
-                                ]}
-                                className="goods-page-block__select"
-                            />
+                                                        <GoodsPageBlockMain1Image
+                                                            keyId={key}
+                                                            valueForm={
+                                                                values.page[
+                                                                    index
+                                                                ]
+                                                            }
+                                                        />
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "main2" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.subtitle`}
+                                                            label="Надзаголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.description`}
+                                                            label="Описание"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="number"
+                                                            name={`${key}.main2_id_awo`}
+                                                            label="ID группы на АвтоВебОфис"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.action`}
+                                                            label="Введите значения атрибута 'action' в теге '<form>'"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.formId`}
+                                                            label="Введите значения атрибута 'value' в теге '<input>' с 'name=formId'"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.formVc`}
+                                                            label="Введите значения атрибута 'value' в теге '<input>' с 'name=formVc'"
+                                                            className="goods-page-block__input"
+                                                        />
 
-                            {values.page[index].range === "1" ? (
-                                <>
-                                    <Field
-                                        component={RenderInput}
-                                        type="datetime-local"
-                                        name={`${key}.minDate`}
-                                        label="С"
-                                        className="goods-page-block__input"
-                                    />
-                                    <Field
-                                        component={RenderInput}
-                                        type="datetime-local"
-                                        name={`${key}.maxDate`}
-                                        label="До"
-                                        className="goods-page-block__input"
-                                    />
-                                </>
-                            ) : (
-                                <Field
-                                    component={RenderInput}
-                                    type="datetime-local"
-                                    name={`${key}.date`}
-                                    label="Дата и время проведения"
-                                    className="goods-page-block__input"
-                                />
-                            )}
-                        </>
-                    ) : null}
-                    {values && values.page[index].type === "section-squares" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
+                                                        <Field
+                                                            component={
+                                                                RenderSelect
+                                                            }
+                                                            name={`${key}.auto`}
+                                                            label="Авто"
+                                                            choices={[
+                                                                {
+                                                                    title: "Нет",
+                                                                    key: 0,
+                                                                },
+                                                                {
+                                                                    title: "Да",
+                                                                    key: 1,
+                                                                },
+                                                            ]}
+                                                            className="goods-page-block__select"
+                                                        />
 
-                            <FieldArray
-                                component={GoodsPageBlockSquares}
-                                name={`${key}.squares`}
-                            />
-                        </>
-                    ) : null}
-                    {values && values.page[index].type === "slider-text" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
+                                                        {values.page[index]
+                                                            .auto === "1" ? (
+                                                            <Field
+                                                                component={
+                                                                    RenderInput
+                                                                }
+                                                                type="number"
+                                                                name={`${key}.day`}
+                                                                label="Через сколько дней продлить мероприятие"
+                                                                className="goods-page-block__input"
+                                                            />
+                                                        ) : null}
 
-                            <FieldArray
-                                component={GoodsPageBlockSliderTextTabs}
-                                name={`${key}.tabs`}
-                            />
+                                                        <Field
+                                                            component={
+                                                                RenderSelect
+                                                            }
+                                                            name={`${key}.range`}
+                                                            label="Диапазон"
+                                                            choices={[
+                                                                {
+                                                                    title: "Нет",
+                                                                    key: 0,
+                                                                },
+                                                                {
+                                                                    title: "Да",
+                                                                    key: 1,
+                                                                },
+                                                            ]}
+                                                            className="goods-page-block__select"
+                                                        />
 
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.btnText`}
-                                label="Кнопка"
-                                className="goods-page-block__input"
-                            />
-                        </>
-                    ) : null}
-                    {values &&
-                    values.page[index].type === "composition-product" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
+                                                        {values.page[index]
+                                                            .range === "1" ? (
+                                                            <>
+                                                                <Field
+                                                                    component={
+                                                                        RenderInput
+                                                                    }
+                                                                    type="datetime-local"
+                                                                    name={`${key}.minDate`}
+                                                                    label="С"
+                                                                    className="goods-page-block__input"
+                                                                />
+                                                                <Field
+                                                                    component={
+                                                                        RenderInput
+                                                                    }
+                                                                    type="datetime-local"
+                                                                    name={`${key}.maxDate`}
+                                                                    label="До"
+                                                                    className="goods-page-block__input"
+                                                                />
+                                                            </>
+                                                        ) : (
+                                                            <Field
+                                                                component={
+                                                                    RenderInput
+                                                                }
+                                                                type="datetime-local"
+                                                                name={`${key}.date`}
+                                                                label="Дата и время проведения"
+                                                                className="goods-page-block__input"
+                                                            />
+                                                        )}
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "section-squares" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
 
-                            <FieldArray
-                                component={GoodsPageBlockModules}
-                                name={`${key}.modules`}
-                                valueForm={values.page[index]}
-                            />
+                                                        <FieldArray
+                                                            component={
+                                                                GoodsPageBlockSquares
+                                                            }
+                                                            name={`${key}.squares`}
+                                                        />
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "slider-text" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
 
-                            <Field
-                                component={RenderSelect}
-                                name={`${key}.formBoolean`}
-                                label="Форма"
-                                choices={[
-                                    {title: "Нет", key: 0},
-                                    {title: "Да", key: 1},
-                                ]}
-                                className="goods-page-block__select"
-                            />
+                                                        <FieldArray
+                                                            component={
+                                                                GoodsPageBlockSliderTextTabs
+                                                            }
+                                                            name={`${key}.tabs`}
+                                                        />
 
-                            {values.page[index].formBoolean === "1" ? (
-                                <>
-                                    <Field
-                                        component={RenderInput}
-                                        type="text"
-                                        name={`${key}.form_id_awo`}
-                                        label="ID группы на АвтоВебОфис"
-                                        className="goods-page-block__input"
-                                    />
-                                    <Field
-                                        component={RenderInput}
-                                        type="text"
-                                        name={`${key}.action`}
-                                        label="Введите значения атрибута 'action' в теге '<form>'"
-                                        className="goods-page-block__input"
-                                    />
-                                    <Field
-                                        component={RenderInput}
-                                        type="text"
-                                        name={`${key}.formId`}
-                                        label="Введите значения атрибута 'value' в теге '<input>' с 'name=formId'"
-                                        className="goods-page-block__input"
-                                    />
-                                    <Field
-                                        component={RenderInput}
-                                        type="text"
-                                        name={`${key}.formVc`}
-                                        label="Введите значения атрибута 'value' в теге '<input>' с 'name=formVc'"
-                                        className="goods-page-block__input"
-                                    />
-                                </>
-                            ) : null}
-                        </>
-                    ) : null}
-                    {values && values.page[index].type === "teachers" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.btnText`}
+                                                            label="Кнопка"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "composition-product" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
 
-                            <FieldArray
-                                component={GoodsPageBlockTeacher}
-                                name={`${key}.auth`}
-                            />
-                        </>
-                    ) : null}
-                    {values && values.page[index].type === "feedback-photos" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
+                                                        <FieldArray
+                                                            component={
+                                                                GoodsPageBlockModules
+                                                            }
+                                                            name={`${key}.modules`}
+                                                            valueForm={
+                                                                values.page[
+                                                                    index
+                                                                ]
+                                                            }
+                                                        />
 
-                            <FieldArray
-                                component={GoodsPageBlockFeedbackPhotos}
-                                name={`${key}.photos`}
-                                valueForm={values.page[index]}
-                            />
-                        </>
-                    ) : null}
-                    {values && values.page[index].type === "feedback-videos" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
+                                                        <Field
+                                                            component={
+                                                                RenderSelect
+                                                            }
+                                                            name={`${key}.formBoolean`}
+                                                            label="Форма"
+                                                            choices={[
+                                                                {
+                                                                    title: "Нет",
+                                                                    key: 0,
+                                                                },
+                                                                {
+                                                                    title: "Да",
+                                                                    key: 1,
+                                                                },
+                                                            ]}
+                                                            className="goods-page-block__select"
+                                                        />
 
-                            <FieldArray
-                                component={GoodsPageBlockFeedbackVideos}
-                                name={`${key}.videos`}
-                                valueForm={values.page[index]}
-                            />
-                        </>
-                    ) : null}
-                    {values && values.page[index].type === "goods" ? (
-                        <>
-                            <Field
-                                component={RenderInput}
-                                type="text"
-                                name={`${key}.title`}
-                                label="Заголовок"
-                                className="goods-page-block__input"
-                            />
+                                                        {values.page[index]
+                                                            .formBoolean ===
+                                                        "1" ? (
+                                                            <>
+                                                                <Field
+                                                                    component={
+                                                                        RenderInput
+                                                                    }
+                                                                    type="text"
+                                                                    name={`${key}.form_id_awo`}
+                                                                    label="ID группы на АвтоВебОфис"
+                                                                    className="goods-page-block__input"
+                                                                />
+                                                                <Field
+                                                                    component={
+                                                                        RenderInput
+                                                                    }
+                                                                    type="text"
+                                                                    name={`${key}.action`}
+                                                                    label="Введите значения атрибута 'action' в теге '<form>'"
+                                                                    className="goods-page-block__input"
+                                                                />
+                                                                <Field
+                                                                    component={
+                                                                        RenderInput
+                                                                    }
+                                                                    type="text"
+                                                                    name={`${key}.formId`}
+                                                                    label="Введите значения атрибута 'value' в теге '<input>' с 'name=formId'"
+                                                                    className="goods-page-block__input"
+                                                                />
+                                                                <Field
+                                                                    component={
+                                                                        RenderInput
+                                                                    }
+                                                                    type="text"
+                                                                    name={`${key}.formVc`}
+                                                                    label="Введите значения атрибута 'value' в теге '<input>' с 'name=formVc'"
+                                                                    className="goods-page-block__input"
+                                                                />
+                                                            </>
+                                                        ) : null}
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "teachers" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
 
-                            <FieldArray
-                                component={GoodsPageBlockGoods}
-                                name={`${key}.goods`}
-                            />
-                        </>
-                    ) : null}
-                </div>
-            ))}
+                                                        <FieldArray
+                                                            component={
+                                                                GoodsPageBlockTeacher
+                                                            }
+                                                            name={`${key}.auth`}
+                                                        />
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "feedback-photos" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+
+                                                        <FieldArray
+                                                            component={
+                                                                GoodsPageBlockFeedbackPhotos
+                                                            }
+                                                            name={`${key}.photos`}
+                                                            valueForm={
+                                                                values.page[
+                                                                    index
+                                                                ]
+                                                            }
+                                                        />
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "feedback-videos" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+
+                                                        <FieldArray
+                                                            component={
+                                                                GoodsPageBlockFeedbackVideos
+                                                            }
+                                                            name={`${key}.videos`}
+                                                            valueForm={
+                                                                values.page[
+                                                                    index
+                                                                ]
+                                                            }
+                                                        />
+                                                    </>
+                                                ) : null}
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "goods" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+
+                                                        <FieldArray
+                                                            component={
+                                                                GoodsPageBlockGoods
+                                                            }
+                                                            name={`${key}.goods`}
+                                                        />
+                                                    </>
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
 
             <div className="goods-page-bottom-btn">
                 <GoodsPageAddBlockBtn addBlock={addBlock} />

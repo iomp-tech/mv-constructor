@@ -20,7 +20,7 @@ export default class FieldFileInput extends Component {
         const {input, label, required, meta} = this.props; //whatever props you send to the component from redux-form Field
         return (
             <div>
-                <label>{label}</label>
+                <label>{label} (разрешение 16:9)</label>
                 <div>
                     <input
                         type="file"

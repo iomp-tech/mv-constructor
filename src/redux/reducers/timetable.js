@@ -3,6 +3,9 @@ const initialState = {
 	isLoadedById: false,
 	items: [],
 	itemById: [],
+
+	pageCopyId: 0,
+	pageCopy: []
 };
 
 const timetable = (state = initialState, action) => {
@@ -32,6 +35,14 @@ const timetable = (state = initialState, action) => {
 			isLoadedById: action.payload,
 		};
 	}
+	if (action.type === 'SET_TIMETABLE_PAGE_COPY') {
+		return {
+			...state,
+			pageCopy: action.payload.page,
+			pageCopyId: action.payload.id
+		};
+	}
+
 	return state;
 };
 

@@ -25,7 +25,7 @@ GoodsPageForm = connect((state) => ({
 }))(GoodsPageForm);
 
 GoodsPageForm = reduxForm({
-	form: "page-form-goods",
+    form: "page-form-goods",
 })(GoodsPageForm);
 
 export default GoodsPageForm;
