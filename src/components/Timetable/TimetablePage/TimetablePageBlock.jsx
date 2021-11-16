@@ -8,12 +8,13 @@ import {fetchTeachers} from "../../../redux/actions/teachers";
 
 import {
     TimetablePageAddBlockBtn,
+    TimetablePageBlockGoods,
     RenderInput,
     RenderSelect,
     FieldFileInput,
 } from "../../";
 
-const TimetablePageBlockMain1Image = ({keyId, valueForm}) => {
+const TimetablePageBlockMain1Image = React.memo(({keyId, valueForm}) => {
     const [stateImg, setStateImg] = React.useState("");
 
     const urlGet = (input) => {
@@ -51,9 +52,49 @@ const TimetablePageBlockMain1Image = ({keyId, valueForm}) => {
             )}
         </>
     );
-};
+});
 
-const TimetablePageBlockSquares = ({fields}) => {
+const TimetablePageBlockMain2Image = React.memo(({keyId, valueForm}) => {
+    const [stateImg, setStateImg] = React.useState("");
+
+    const urlGet = (input) => {
+        if (typeof input !== "string" && input) {
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                setStateImg(e.target.result);
+            };
+
+            reader.readAsDataURL(input);
+        }
+    };
+
+    return (
+        <>
+            <Field component={FieldFileInput} name={`${keyId}.image`} />
+
+            {urlGet(valueForm.image)}
+
+            {stateImg !== "" ? (
+                <div
+                    className="img-placeholder"
+                    style={{
+                        backgroundImage: `url(${stateImg})`,
+                    }}
+                ></div>
+            ) : (
+                <div
+                    className="img-placeholder"
+                    style={{
+                        backgroundImage: `url(${valueForm.image})`,
+                    }}
+                ></div>
+            )}
+        </>
+    );
+});
+
+const TimetablePageBlockSquares = React.memo(({fields}) => {
     const addBlock = () => {
         fields.push({type: "small"});
     };
@@ -118,9 +159,9 @@ const TimetablePageBlockSquares = ({fields}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockSliderTextTabsItems = ({fields}) => {
+const TimetablePageBlockSliderTextTabsItems = React.memo(({fields}) => {
     const addBlock = () => {
         fields.push({});
     };
@@ -166,9 +207,9 @@ const TimetablePageBlockSliderTextTabsItems = ({fields}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockSliderTextTabs = ({fields}) => {
+const TimetablePageBlockSliderTextTabs = React.memo(({fields}) => {
     const addBlock = () => {
         fields.push({});
     };
@@ -220,9 +261,9 @@ const TimetablePageBlockSliderTextTabs = ({fields}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockModulesItem = ({fields}) => {
+const TimetablePageBlockModulesItem = React.memo(({fields}) => {
     const addBlock = () => {
         fields.push({});
     };
@@ -276,9 +317,9 @@ const TimetablePageBlockModulesItem = ({fields}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockModules = ({fields, valueForm}) => {
+const TimetablePageBlockModules = React.memo(({fields, valueForm}) => {
     const dispatch = useDispatch();
 
     const {items} = useSelector(({goods}) => goods);
@@ -406,9 +447,9 @@ const TimetablePageBlockModules = ({fields, valueForm}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockTeacher = ({fields}) => {
+const TimetablePageBlockTeacher = React.memo(({fields}) => {
     const dispatch = useDispatch();
 
     const itemsTeacher = useSelector(({teachers}) => teachers.items);
@@ -465,9 +506,9 @@ const TimetablePageBlockTeacher = ({fields}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockFeedbackPhotos = ({fields, valueForm}) => {
+const TimetablePageBlockFeedbackPhotos = React.memo(({fields, valueForm}) => {
     const addBlock = () => {
         fields.push({});
     };
@@ -549,9 +590,9 @@ const TimetablePageBlockFeedbackPhotos = ({fields, valueForm}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockFeedbackVideos = ({fields, valueForm}) => {
+const TimetablePageBlockFeedbackVideos = React.memo(({fields, valueForm}) => {
     const addBlock = () => {
         fields.push({});
     };
@@ -642,68 +683,9 @@ const TimetablePageBlockFeedbackVideos = ({fields, valueForm}) => {
             </div>
         </>
     );
-};
+});
 
-const TimetablePageBlockGoods = ({fields}) => {
-    const dispatch = useDispatch();
-
-    const itemsGoods = useSelector(({goods}) => goods.items);
-
-    React.useEffect(() => {
-        if (!itemsGoods.length) {
-            dispatch(fetchGoods());
-        }
-    });
-
-    const addBlock = () => {
-        fields.push({});
-    };
-
-    const deleteBlock = (index) => {
-        fields.remove(index);
-    };
-
-    return (
-        <>
-            {fields.map((key, index) => (
-                <div
-                    className="goods-page-subblock"
-                    key={`goods-page-subblock-${key}-${index}`}
-                >
-                    <div className="goods-page-block-delete">
-                        <h2 className="goods-page-subblock__title">
-                            Товар {parseFloat(index + 1)}
-                        </h2>
-                        <span
-                            className="goods-page-block__delete"
-                            onClick={() => deleteBlock(index)}
-                        >
-                            Удалить
-                        </span>
-                    </div>
-
-                    <Field
-                        component={RenderSelect}
-                        name={`${key}`}
-                        optionText="title"
-                        optionValue="id"
-                        choices={itemsGoods}
-                        className="goods-page-block__select"
-                    />
-                </div>
-            ))}
-
-            <div className="goods-page-subblock-btn">
-                <TimetablePageAddBlockBtn
-                    text="Добавить товар"
-                    addBlock={addBlock}
-                />
-            </div>
-        </>
-    );
-};
-
-const TimetablePageBlock = ({fields, values}) => {
+const TimetablePageBlock = React.memo(({fields, values}) => {
     const {pageCopy, pageCopyId} = useSelector(({timetable}) => timetable);
 
     React.useEffect(() => {
@@ -734,6 +716,7 @@ const TimetablePageBlock = ({fields, values}) => {
         {title: "Главная 1", key: "main1"},
         {title: "Главная 1 (с картинкой)", key: "main1-image"},
         {title: "Главная 2", key: "main2"},
+        {title: "Главная 2 (с картинкой)", key: "main2-image"},
         {title: "Квадраты", key: "section-squares"},
         {title: "Слайдер с текстом", key: "slider-text"},
         {title: "Состав продукта", key: "composition-product"},
@@ -900,6 +883,7 @@ const TimetablePageBlock = ({fields, values}) => {
                                                         />
                                                     </>
                                                 ) : null}
+
                                                 {values &&
                                                 values.page[index].type ===
                                                     "main2" ? (
@@ -930,6 +914,49 @@ const TimetablePageBlock = ({fields, values}) => {
                                                             name={`${key}.description`}
                                                             label="Описание"
                                                             className="goods-page-block__input"
+                                                        />
+                                                    </>
+                                                ) : null}
+
+                                                {values &&
+                                                values.page[index].type ===
+                                                    "main2-image" ? (
+                                                    <>
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.subtitle`}
+                                                            label="Надзаголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.title`}
+                                                            label="Заголовок"
+                                                            className="goods-page-block__input"
+                                                        />
+                                                        <Field
+                                                            component={
+                                                                RenderInput
+                                                            }
+                                                            type="text"
+                                                            name={`${key}.description`}
+                                                            label="Описание"
+                                                            className="goods-page-block__input"
+                                                        />
+
+                                                        <TimetablePageBlockMain2Image
+                                                            keyId={key}
+                                                            valueForm={
+                                                                values.page[
+                                                                    index
+                                                                ]
+                                                            }
                                                         />
                                                     </>
                                                 ) : null}
@@ -1156,6 +1183,6 @@ const TimetablePageBlock = ({fields, values}) => {
             </div>
         </>
     );
-};
+});
 
 export default TimetablePageBlock;

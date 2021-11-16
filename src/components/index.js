@@ -28,4 +28,8 @@ export { default as TimetableNotFound } from "./Timetable/TimetableNotFound";
 export { default as TimetablePageTop } from "./Timetable/TimetablePage/TimetablePageTop";
 export { default as TimetablePageForm } from "./Timetable/TimetablePage/TimetablePageForm";
 export { default as TimetablePageAddBlockBtn } from "./Timetable/TimetablePage/TimetablePageAddBlockBtn";
+// TimetablePageBlock
 export { default as TimetablePageBlock } from "./Timetable/TimetablePage/TimetablePageBlock";
+// TimetablePageBlockGoods
+export { default as TimetablePageBlockGoods } from "./Timetable/TimetablePage/TimetablePageBlock/TimetablePageBlockGoods";
+export { default as TimetablePageBlockGoodsItem } from "./Timetable/TimetablePage/TimetablePageBlock/TimetablePageBlockGoodsItem";

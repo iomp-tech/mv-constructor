@@ -50,6 +50,15 @@ const GoodsEdit = ({match}) => {
                         }
                     }
 
+                    if (dataForm[key][key2].type === "main2-image") {
+                        if (dataForm[key][key2].image) {
+                            formData.append(
+                                "main2Image-" + key2,
+                                dataForm[key][key2].image
+                            );
+                        }
+                    }
+
                     if (dataForm[key][key2].type === "feedback-photos") {
                         if (dataForm[key][key2].photos) {
                             for (let key3 in dataForm[key][key2].photos) {

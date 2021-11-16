@@ -1,6 +1,6 @@
 import React from "react";
 
-const TimetablePageAddBlockBtn = ({addBlock, text}) => {
+const TimetablePageAddBlockBtn = React.memo(({addBlock, text}) => {
     return (
         <button
             type="button"
@@ -20,6 +20,6 @@ const TimetablePageAddBlockBtn = ({addBlock, text}) => {
             {text ? text : " Добавить блок"}
         </button>
     );
-};
+});
 
 export default TimetablePageAddBlockBtn;
