@@ -18,7 +18,7 @@ const Login = () => {
         <div className="login">
             <div className="container">
                 <div className="login-wrapper">
-                    <a href="https://maastervision.su" className="login-logo">
+                    <a href="https://mastervision.su" className="login-logo">
                         <img
                             src={`${DOMEN}/public/storage/all/logo.svg`}
                             alt="MasterVision"
